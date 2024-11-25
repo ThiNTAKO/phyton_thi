@@ -1,0 +1,4 @@
+Dec 10 12:58:39 Client-mac socketfilterfw[183] : openvpn-service: Allow TCP LISTEN (in:0 out:2)
+Dec 10 13:01:09 Client-mac socketfilterfw[183] : Dropbox: Allow TCP LISTEN (in:0 out:2)
+Dec 11 18:40:03 Client-mac socketfilterfw[183] : Office365Service: Allow TCP CONNECT (in:1 out:0)
+Dec 12 17:17:25 Client-mac socketfilterfw[183] : Dropbox: Allow TCP LISTEN (in:0 out:4)
