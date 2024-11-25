@@ -1,7 +1,8 @@
-#Code Python : Modèle de gestion de bus
+import tkinter as tk
+from tkinter import messagebox
 
 class Bus:
-    def _init_(self, bus_id, capacity, status="En service"):
+    def __init__(self, bus_id, capacity, status="En service"):
         self.bus_id = bus_id
         self.capacity = capacity
         self.status = status
@@ -17,23 +18,23 @@ class Bus:
             self.current_passengers += num_passengers
             print(f"{num_passengers} passagers montés dans le bus {self.bus_id}.")
         else:
-            print(f"Bus {self.bus_id} plein !")
+            print(f"Bus {self.bus_id} plein ! Seulement {self.capacity - self.current_passengers} places disponibles.")
 
-    def _str_(self):
+    def __str__(self):
         return f"Bus {self.bus_id} - {self.status} - {self.current_passengers}/{self.capacity} passagers."
 
 
 class Route:
-    def _init_(self, line_name, stops):
+    def __init__(self, line_name, stops):
         self.line_name = line_name
-        self.stops = stops  # Liste des arrêts de bus
+        self.stops = stops
 
-    def _str_(self):
+    def __str__(self):
         return f"Ligne {self.line_name} : {', '.join(self.stops)}."
 
 
 class Driver:
-    def _init_(self, name, driver_id):
+    def __init__(self, name, driver_id):
         self.name = name
         self.driver_id = driver_id
         self.assigned_bus = None
@@ -42,12 +43,12 @@ class Driver:
         self.assigned_bus = bus
         print(f"Conducteur {self.name} assigné au bus {bus.bus_id}.")
 
-    def _str_(self):
+    def __str__(self):
         return f"Conducteur {self.name} - Bus assigné : {self.assigned_bus.bus_id if self.assigned_bus else 'Aucun'}."
 
 
 class TransportSystem:
-    def _init_(self):
+    def __init__(self):
         self.buses = []
         self.routes = []
         self.drivers = []
@@ -72,41 +73,102 @@ class TransportSystem:
         else:
             print("Erreur : Conducteur ou bus non trouvé.")
 
-    def _str_(self):
+    def __str__(self):
         return f"Transport System : {len(self.buses)} bus, {len(self.routes)} routes, {len(self.drivers)} conducteurs."
 
 
-# Exemple d'utilisation
-if __name__ == "_main_":
-    # Création du système
-    system = TransportSystem()
+# Fonction d'interface pour ajouter un bus
+def add_bus_interface():
+    bus_id = bus_id_entry.get()
+    capacity = int(capacity_entry.get())
+    bus = Bus(bus_id, capacity)
+    system.add_bus(bus)
+    messagebox.showinfo("Bus ajouté", f"Bus {bus_id} ajouté avec une capacité de {capacity} passagers.")
 
-    # Ajout des lignes
-    route1 = Route("Ligne 1", ["Arrêt A", "Arrêt B", "Arrêt C"])
-    system.add_route(route1)
 
-    # Ajout des bus
-    bus1 = Bus(bus_id=101, capacity=50)
-    bus2 = Bus(bus_id=102, capacity=30)
-    system.add_bus(bus1)
-    system.add_bus(bus2)
+# Fonction d'interface pour ajouter un conducteur
+def add_driver_interface():
+    name = driver_name_entry.get()
+    driver_id = int(driver_id_entry.get())
+    driver = Driver(name, driver_id)
+    system.add_driver(driver)
+    messagebox.showinfo("Conducteur ajouté", f"Conducteur {name} ajouté avec l'ID {driver_id}.")
 
-    # Ajout des conducteurs
-    driver1 = Driver(name="Alice", driver_id=1)
-    driver2 = Driver(name="Bob", driver_id=2)
-    system.add_driver(driver1)
-    system.add_driver(driver2)
 
-    # Assignation
-    bus1.assign_route(route1)
-    system.assign_driver_to_bus(driver_id=1, bus_id=101)
+# Fonction pour assigner un conducteur à un bus
+def assign_driver_to_bus_interface():
+    driver_id = int(assign_driver_id_entry.get())
+    bus_id = int(assign_bus_id_entry.get())
+    system.assign_driver_to_bus(driver_id, bus_id)
+    messagebox.showinfo("Assignation réussie", f"Conducteur {driver_id} assigné au bus {bus_id}.")
 
-    # Simulation de montée de passagers
-    bus1.board_passengers(20)
-    bus1.board_passengers(35)
 
-    # Affichage de l'état
-    print(bus1)
-    print(route1)
-    print(driver1)
-    print(system)
+# Fonction pour simuler la montée de passagers
+def board_passengers_interface():
+    bus_id = int(board_bus_id_entry.get())
+    num_passengers = int(num_passengers_entry.get())
+    bus = next((b for b in system.buses if b.bus_id == bus_id), None)
+    if bus:
+        bus.board_passengers(num_passengers)
+        messagebox.showinfo("Passagers montés", f"{num_passengers} passagers montés dans le bus {bus_id}.")
+    else:
+        messagebox.showerror("Erreur", "Bus non trouvé.")
+
+
+# Création du système de transport
+system = TransportSystem()
+
+# Interface graphique avec Tkinter
+root = tk.Tk()
+root.title("Système de Gestion de Bus")
+
+# Ajout des bus
+tk.Label(root, text="ID Bus :").grid(row=0, column=0)
+bus_id_entry = tk.Entry(root)
+bus_id_entry.grid(row=0, column=1)
+
+tk.Label(root, text="Capacité :").grid(row=1, column=0)
+capacity_entry = tk.Entry(root)
+capacity_entry.grid(row=1, column=1)
+
+add_bus_button = tk.Button(root, text="Ajouter un Bus", command=add_bus_interface)
+add_bus_button.grid(row=2, column=0, columnspan=2)
+
+# Ajout des conducteurs
+tk.Label(root, text="Nom Conducteur :").grid(row=3, column=0)
+driver_name_entry = tk.Entry(root)
+driver_name_entry.grid(row=3, column=1)
+
+tk.Label(root, text="ID Conducteur :").grid(row=4, column=0)
+driver_id_entry = tk.Entry(root)
+driver_id_entry.grid(row=4, column=1)
+
+add_driver_button = tk.Button(root, text="Ajouter un Conducteur", command=add_driver_interface)
+add_driver_button.grid(row=5, column=0, columnspan=2)
+
+# Assignation conducteur à bus
+tk.Label(root, text="ID Conducteur :").grid(row=6, column=0)
+assign_driver_id_entry = tk.Entry(root)
+assign_driver_id_entry.grid(row=6, column=1)
+
+tk.Label(root, text="ID Bus :").grid(row=7, column=0)
+assign_bus_id_entry = tk.Entry(root)
+assign_bus_id_entry.grid(row=7, column=1)
+
+assign_button = tk.Button(root, text="Assigner Conducteur au Bus", command=assign_driver_to_bus_interface)
+assign_button.grid(row=8, column=0, columnspan=2)
+
+# Simulation de la montée de passagers
+tk.Label(root, text="ID Bus :").grid(row=9, column=0)
+board_bus_id_entry = tk.Entry(root)
+board_bus_id_entry.grid(row=9, column=1)
+
+tk.Label(root, text="Nombre de passagers :").grid(row=10, column=0)
+num_passengers_entry = tk.Entry(root)
+num_passengers_entry.grid(row=10, column=1)
+
+board_passengers_button = tk.Button(root, text="Monter des Passagers", command=board_passengers_interface)
+board_passengers_button.grid(row=11, column=0, columnspan=2)
+
+# Lancer l'interface
+root.mainloop()
