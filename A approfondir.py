@@ -58,14 +58,13 @@ def process_logs(log_file):
 
 
 def detect_vulnerabilities(data):
-    counter =0
     vulnerabilities = []
     for entry in data:
         log_format = entry[0]
         details = entry[1:]
         #print(f'{data}\n')
         if log_format == 'WSC':
-
+            total_log_line +=1
             ip, user, timestamp, request, status_code, size = details
             if "../" in request or ";" in request:
                 counter += 1
@@ -86,6 +85,23 @@ def detect_vulnerabilities(data):
             # else :
             #     vulnerabilities.append(f"[IIS] Suspicious User Agent Detected: {user_agent}")
     return vulnerabilities
+
+def get_pour_cent_vul(data):
+    total_log_line =0
+    counter = 0
+    for data_line in data :
+        log_format = entry[0]
+        details = entry[1:]
+        # print(f'{data}\n')
+        if log_format == 'WSC':
+            total_log_line += 1
+            ip, user, timestamp, request, status_code, size = details
+            if "../" in request or ";" in request:
+                counter += 1
+                pour_cent_vul = (counter * total_log_line) * 100
+            print(total_log_line)
+            print(pour_cent_vul)
+    return total_log_line, pour_cent_vul
 
 
 # Interface Graphique
@@ -161,4 +177,15 @@ vulnerabilities_text.grid(row=4, column=0, columnspan=3, padx=10, pady=10)
 
 # Lancer l'application
 root.mainloop()
+
+# Lancer l'affichage du pie chart sur les connexions correctes et les connexions erreurs
+import matplotlib.pyplot as plt
+
+labels = 'Frogs', 'Hogs'
+sizes = [get_pour_cent_vul(data),get_pour_cent_vul(data)]
+
+fig, ax = plt.subplots()
+ax.pie(sizes, labels=labels)
+
+plt.show()
 
